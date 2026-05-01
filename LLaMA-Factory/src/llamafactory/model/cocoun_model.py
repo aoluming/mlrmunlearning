@@ -809,22 +809,25 @@ class Cocoun_model(Qwen2_5_VLForConditionalGeneration):
         current_p_id = p_ids[:, :, -1:].to(device)
         current_len = input_ids.shape[1]
 
-        # 2. 隐空间迭代 (Coconut 循环)
+        # 2. 隐空间迭代 (Coconut 循环) - 方案A: 记录latent token IDs
         start_embed = self.get_input_embeddings()(torch.tensor([[self.start_latent_id]], device=device))
         end_embed = self.get_input_embeddings()(torch.tensor([[self.end_latent_id]], device=device))
-        
+
+        # 记录latent tokens，用于最终输出（方案A关键修改）
+        latent_token_ids = [self.start_latent_id]
+
         # 序列: <start> -> num_latent 次隐变量 -> <end>
         latent_inputs = [start_embed] + [None] * num_latent_tokens + [end_embed]
-        
-        for step_embed in latent_inputs:
+
+        for step_idx, step_embed in enumerate(latent_inputs):
             current_p_id = current_p_id.clone()
             current_p_id[:, 0, :] += 1 # 递增 T 维
             cache_pos = torch.tensor([current_len], device=device)
             attention_mask = torch.cat([attention_mask, torch.ones((1, 1), device=device, dtype=attention_mask.dtype)], dim=-1)
-            
+
             # 使用上一步的 hidden_state 或当前的特殊 embedding
             actual_input = step_embed if step_embed is not None else current_hidden_state
-            
+
             model_out = self.model(
                 inputs_embeds=actual_input,
                 past_key_values=past_key_values,
@@ -838,6 +841,12 @@ class Cocoun_model(Qwen2_5_VLForConditionalGeneration):
             current_hidden_state = model_out.last_hidden_state
             current_len += 1
 
+            # 记录latent token IDs（中间步骤使用latent_token_id）
+            if step_embed is None and step_idx < len(latent_inputs) - 1:
+                latent_token_ids.append(self.latent_token_id)
+            elif step_idx == len(latent_inputs) - 1:
+                latent_token_ids.append(self.end_latent_id)
+
         # 3. 手动文本解码循环 (取代 super().generate)
         generated_tokens = []
         # 获取停止符号 ID (Qwen 通常是 151643 或 151645)
@@ -846,18 +855,17 @@ class Cocoun_model(Qwen2_5_VLForConditionalGeneration):
         for i in range(max_new_tokens):
             # 预测下一个词
             logits = self.lm_head(current_hidden_state)
-            
-            
-                    
+
+
             probs = torch.softmax(logits[:, -1, :], dim=-1)
             top_val, top_idx = torch.topk(probs, 5) # 看看概率最高的前5个词
-            
+
             if i == 0:
                 print(f"[DEBUG] First Token Candidates: {top_idx[0].tolist()}")
                 print(f"[DEBUG] First Token Probs: {top_val[0].tolist()}")
-            
+
             next_token = torch.argmax(logits[:, -1, :], dim=-1, keepdim=True)
-            
+
             token_val = next_token.item()
             if token_val == eos_token_id:
                 break
@@ -882,10 +890,19 @@ class Cocoun_model(Qwen2_5_VLForConditionalGeneration):
             current_hidden_state = model_out.last_hidden_state
             current_len += 1
 
-        # 4. 构造返回格式（返回完整序列：input_ids + generated_tokens）
+        # 4. 构造返回格式（方案A：返回 input_ids + latent_tokens + generated_tokens）
         if not generated_tokens:
-            print("[WARNING] No tokens were generated! Returning input only.")
-            return input_ids
+            print("[WARNING] No tokens were generated! Returning input with latent tokens.")
+            generated_tokens = []
+
+        # 拼接完整序列：input_ids + latent_token_ids + generated_tokens
+        latent_tokens_tensor = torch.tensor(latent_token_ids, device=device, dtype=input_ids.dtype).unsqueeze(0)
+        generated_tokens_tensor = torch.tensor(generated_tokens, device=device, dtype=input_ids.dtype).unsqueeze(0)
+
+        full_sequence = torch.cat([input_ids, latent_tokens_tensor, generated_tokens_tensor], dim=1)
+
+        print(f"[DEBUG] Solution A: input {input_ids.shape[1]} + latent {len(latent_token_ids)} + generated {len(generated_tokens)} = {full_sequence.shape[1]}")
+        return full_sequence
 
         # 拼接输入和生成的tokens，返回完整序列
         generated_tokens_tensor = torch.tensor(generated_tokens, device=device, dtype=input_ids.dtype).unsqueeze(0)
