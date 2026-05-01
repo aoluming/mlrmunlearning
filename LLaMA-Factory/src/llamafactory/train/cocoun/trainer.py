@@ -84,7 +84,7 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
         
         # 为了实现梯度上升，我们将原始的损失（旨在最小化）取反。
         # 优化器将最小化 -loss，从而实现最大化原始 loss 的效果。
-        loss = -loss
+        loss = loss
         # print(124234213536)
         return (loss, outputs) if return_outputs else loss
 

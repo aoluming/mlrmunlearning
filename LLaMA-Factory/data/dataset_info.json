@@ -36,7 +36,8 @@
       "content_tag": "content",
       "user_tag": "user",
       "assistant_tag": "assistant"
-    }
+    },
+    "file_sha1": "3851b9454848037341882194f0e4a73f62919d7a"
   },
   "mllm_audio_demo": {
     "file_name": "mllm_audio_demo.json",
@@ -691,6 +692,127 @@
       "content_tag": "content",
       "user_tag": "user",
       "assistant_tag": "assistant"
+    }
+  },
+  "r1_onevision_data": {
+    "file_name": "/data2/dmz/llava_test/LLaVA-main/dataGA66.json",
+    "image_folder": "/data2/dmz/llava_test/LLaVA-main/",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "image"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+  "r1_onevision_data_test": {
+    "file_name": "/data2/dmz/llava_test/LLaVA-main/data_test.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "image": "image",
+      "messages": "conversations"
+    }
+  },
+  "dataGA66_qwen": {
+    "file_name": "dataGA66_qwen_format.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages",
+      "images": "images"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "sharegpt_v": {
+    "file_name": "sharegpt_v.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages",
+      "images": "images"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "dataGA66_trump_new": {
+    "file_name": "dataGA66_trump_new.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+        "messages": "messages",
+        "images": "images"
+    },
+    "tags": {
+        "role_tag": "role",
+        "content_tag": "content",
+        "user_tag": "user",
+        "assistant_tag": "assistant"
+    }
+  },
+  "elonmusk_final": {
+    "file_name": "elonga_final.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+        "messages": "messages",
+        "images": "images"
+    },
+    "tags": {
+        "role_tag": "role",
+        "content_tag": "content",
+        "user_tag": "user",
+        "assistant_tag": "assistant"
+    }
+  },
+  "harrypotter_final": {
+    "file_name": "harrypotterGA_final.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+        "messages": "messages",
+        "images": "images"
+    },
+    "tags": {
+        "role_tag": "role",
+        "content_tag": "content",
+        "user_tag": "user",
+        "assistant_tag": "assistant"
+    }
+  },
+  "joebiden_final": {
+    "file_name": "joebidenga_final.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+        "messages": "messages",
+        "images": "images"
+    },
+    "tags": {
+        "role_tag": "role",
+        "content_tag": "content",
+        "user_tag": "user",
+        "assistant_tag": "assistant"
+    }
+  },
+  "tylor_final": {
+    "file_name": "tylorga_final.jsonl",
+    "formatting": "sharegpt",
+    "columns": {
+        "messages": "messages",
+        "images": "images"
+    },
+    "tags": {
+        "role_tag": "role",
+        "content_tag": "content",
+        "user_tag": "user",
+        "assistant_tag": "assistant"
     }
   }
 }

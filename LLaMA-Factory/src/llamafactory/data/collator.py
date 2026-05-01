@@ -192,7 +192,8 @@ class MultiModalDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
             bsz, seq_length = features["input_ids"].shape
             features["position_ids"] = torch.arange(seq_length).long().repeat(bsz, 1)
             return {"data": features, "input_ids": features["input_ids"], "labels": features["labels"]}
-
+        # import pdb
+        # pdb.set_trace()
         return features
 
 

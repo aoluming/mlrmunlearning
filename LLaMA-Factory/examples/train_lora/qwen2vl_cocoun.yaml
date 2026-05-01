@@ -5,14 +5,14 @@ video_max_pixels: 16384
 trust_remote_code: true
 
 ### method
-stage: sft
+stage: cocoun
 do_train: true
 finetuning_type: lora
 quantization_bit: 4
 lora_rank: 12
 lora_target: all
 
-### dataset
+### dataset joebiden_final dataGA66_trump_new
 dataset: dataGA66_trump_new
 template: qwen2_vl
 cutoff_len: 2048
@@ -21,7 +21,7 @@ overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/r1-onevision-7b-lora-sft-dataGA66-trump_final-gaa-50epochs
+output_dir: saves/r1-onevision-7b-lora-sft-dataGA66-joebiden_final-cocoun-33epochs
 logging_steps: 10
 save_steps: 500
 plot_loss: true

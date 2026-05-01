@@ -14,7 +14,7 @@
 
 import os
 from typing import TYPE_CHECKING, Any, Dict, Optional, TypedDict
-
+import pdb
 import torch
 from transformers import (
     AutoConfig,
@@ -149,16 +149,20 @@ def load_model(
         else:
             if type(config) in AutoModelForVision2Seq._model_mapping.keys():  # assume built-in models
                 load_class = AutoModelForVision2Seq
+                # print('??')
             elif type(config) in AutoModelForSeq2SeqLM._model_mapping.keys():
                 load_class = AutoModelForSeq2SeqLM
+                # print('??s')
             else:
                 load_class = AutoModelForCausalLM
+                # print('??b')
 
             if model_args.train_from_scratch:
                 model = load_class.from_config(config, trust_remote_code=model_args.trust_remote_code)
             else:
                 model = load_class.from_pretrained(**init_kwargs)
-
+        
+        # pdb.set_trace()
         if model_args.mixture_of_depths == "convert":
             model = convert_pretrained_model_to_mod(model, config, model_args)
 

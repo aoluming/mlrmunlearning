@@ -32,6 +32,7 @@ from .processor import (
     PretrainDatasetProcessor,
     SupervisedDatasetProcessor,
     UnsupervisedDatasetProcessor,
+    CocounDatasetProcessor,
 )
 
 
@@ -45,7 +46,7 @@ if TYPE_CHECKING:
     from .processor import DatasetProcessor
     from .template import Template
 
-
+import pdb
 logger = logging.get_logger(__name__)
 
 
@@ -187,7 +188,7 @@ def _get_merged_dataset(
 
 def _get_dataset_processor(
     data_args: "DataArguments",
-    stage: Literal["pt", "sft", "rm", "ppo", "kto"],
+    stage: Literal["pt", "sft", "rm", "ppo", "kto","cocoun"],
     template: "Template",
     tokenizer: "PreTrainedTokenizer",
     processor: Optional["ProcessorMixin"],
@@ -219,6 +220,9 @@ def _get_dataset_processor(
 
     elif stage == "rm":
         dataset_processor_class = PairwiseDatasetProcessor
+    elif stage == "cocoun":
+        dataset_processor_class = CocounDatasetProcessor
+        # pdb.set_trace()
     elif stage == "kto":
         dataset_processor_class = FeedbackDatasetProcessor
     else:
@@ -231,7 +235,7 @@ def _get_preprocessed_dataset(
     dataset: Optional[Union["Dataset", "IterableDataset"]],
     data_args: "DataArguments",
     training_args: "Seq2SeqTrainingArguments",
-    stage: Literal["pt", "sft", "rm", "ppo", "kto"],
+    stage: Literal["pt", "sft", "rm", "ppo", "kto","cocoun"],
     template: "Template",
     tokenizer: "PreTrainedTokenizer",
     processor: Optional["ProcessorMixin"] = None,
@@ -272,7 +276,8 @@ def _get_preprocessed_dataset(
                 raise RuntimeError("Cannot find sufficient samples, consider increasing dataset size.")
             else:
                 raise RuntimeError("Cannot find valid samples, check `data/README.md` for the data format.")
-
+    # import pdb
+    # pdb.set_trace()
     return dataset
 
 
@@ -281,7 +286,7 @@ def get_dataset(
     model_args: "ModelArguments",
     data_args: "DataArguments",
     training_args: "Seq2SeqTrainingArguments",
-    stage: Literal["pt", "sft", "rm", "ppo", "kto"],
+    stage: Literal["pt", "sft", "rm", "ppo", "kto","cocoun"],
     tokenizer: "PreTrainedTokenizer",
     processor: Optional["ProcessorMixin"] = None,
 ) -> "DatasetModule":
