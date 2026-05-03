@@ -34,6 +34,7 @@ from .pt import run_pt
 from .rm import run_rm
 from .sft import run_sft
 from .cocoun import run_cocoun
+from .trajectory import run_trajectory
 from .trainer_utils import get_ray_trainer, get_swanlab_callback
 
 
@@ -76,6 +77,8 @@ def _training_function(config: Dict[str, Any]) -> None:
         run_kto(model_args, data_args, training_args, finetuning_args, callbacks)
     elif finetuning_args.stage == "cocoun":
         run_cocoun(model_args, data_args, training_args, finetuning_args, generating_args, callbacks)
+    elif finetuning_args.stage == "cocoun_trajectory" or finetuning_args.stage == "trajectory":
+        run_trajectory(model_args, data_args, training_args, finetuning_args, generating_args, callbacks)
     else:
         raise ValueError(f"Unknown task: {finetuning_args.stage}.")
 

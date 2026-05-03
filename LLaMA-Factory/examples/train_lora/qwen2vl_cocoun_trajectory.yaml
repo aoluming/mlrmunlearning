@@ -1,3 +1,6 @@
+### COCONUT Trajectory Model Configuration
+### 使用轨迹级遗忘的新方法
+
 ### model
 model_name_or_path: /data2/dmz/multi_Inference_model/R1-Onevision/R1-Onevision-7B
 image_max_pixels: 262144
@@ -5,14 +8,27 @@ video_max_pixels: 16384
 trust_remote_code: true
 
 ### method
-stage: cocoun
+# 重要：使用cocoun_trajectory或trajectory作为stage
+stage: cocoun_trajectory
 do_train: true
 finetuning_type: lora
 quantization_bit: 4
 lora_rank: 12
 lora_target: all
 
-### dataset joebiden_final dataGA66_trump_new
+### Trajectory-specific参数（可选）
+# 遗忘的概念
+forget_concept: "Joe Biden"
+# 风险阈值：latent step被禁止token概率超过此值时触发重定向
+risk_threshold: 0.1
+# 重定向强度：重定向的幅度（0-1之间，越大越激进）
+redirect_strength: 0.5
+# 遗忘损失权重
+unlearning_loss_weight: 1.0
+# 梯度上升权重
+unlearn_lm_loss_weight: 20
+
+### dataset
 dataset: joebiden_final
 template: qwen2_vl
 cutoff_len: 2048
@@ -21,7 +37,7 @@ overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: saves/r1-onevision-7b-lora-sft-dataGA66-joebiden_final-cocoun-70epochs
+output_dir: saves/r1-onevision-7b-lora-sft-dataGA66-joebiden_final-cocoun_trajectory-70epochs
 logging_steps: 10
 save_steps: 500
 plot_loss: true
@@ -37,6 +53,11 @@ warmup_ratio: 0.1
 bf16: true
 ddp_timeout: 180000000
 report_to: none
+
+# 单GPU训练（避免多GPU冲突）
+ddp_find_unused_parameters: false
+fsdp: []  # 禁用FSDP
+
 ### eval
 # val_size: 0.1
 # per_device_eval_batch_size: 1

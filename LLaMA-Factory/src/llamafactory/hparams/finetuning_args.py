@@ -397,7 +397,7 @@ class FinetuningArguments(
         default=False,
         metadata={"help": "Whether or not to train model in purely bf16 precision (without AMP)."},
     )
-    stage: Literal["pt", "sft", "rm", "ppo", "dpo", "kto"] = field(
+    stage: Literal["pt", "sft", "rm", "ppo", "dpo", "kto", "cocoun", "cocoun_trajectory", "trajectory"] = field(
         default="sft",
         metadata={"help": "Which stage will be performed in training."},
     )
@@ -442,6 +442,28 @@ class FinetuningArguments(
         metadata={"help": "Whether or not to compute effective tokens per second."},
     )
 
+    # COCONUT/Trajectory Unlearning Arguments
+    forget_concept: str = field(
+        default="Joe Biden",
+        metadata={"help": "The concept to forget during unlearning."},
+    )
+    unlearning_loss_weight: float = field(
+        default=1.0,
+        metadata={"help": "Weight for the unlearning contrastive loss."},
+    )
+    unlearn_lm_loss_weight: float = field(
+        default=20.0,
+        metadata={"help": "Weight for the gradient ascent loss on answer tokens."},
+    )
+    risk_threshold: float = field(
+        default=0.1,
+        metadata={"help": "Risk threshold for logit-lens critic to trigger redirection."},
+    )
+    redirect_strength: float = field(
+        default=0.5,
+        metadata={"help": "Strength of latent state redirection (0-1)."},
+    )
+
     def __post_init__(self):
         def split_arg(arg):
             if isinstance(arg, str):
@@ -481,7 +503,7 @@ class FinetuningArguments(
         if int(self.use_galore) + int(self.use_apollo) + (self.use_badam) > 1:
             raise ValueError("Cannot use GaLore, APOLLO or BAdam together.")
 
-        if self.pissa_init and (self.stage in ["ppo", "kto"] or self.use_ref_model):
+        if self.pissa_init and (self.stage in ["ppo", "kto", "cocoun", "cocoun_trajectory", "trajectory"] or self.use_ref_model):
             raise ValueError("Cannot use PiSSA for current training stage.")
 
         if self.train_mm_proj_only and self.finetuning_type != "full":
